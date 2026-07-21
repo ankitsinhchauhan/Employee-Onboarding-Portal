@@ -5,7 +5,6 @@ from .models import User
 
 admin.site.register(User)
 
-@admin.register(User)
 class UserAdmin(admin.ModelAdmin):
     list_display = ('id', 'full_name', 'personal_email', 'company_email', 'role', 'status')
     list_filter = ('role', 'status')

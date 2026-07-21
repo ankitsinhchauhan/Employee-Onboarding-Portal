@@ -5,7 +5,6 @@ from .models import EmployeeProfile
 
 admin.site.register(EmployeeProfile)
 
-@admin.register(EmployeeProfile)
 class EmployeeProfileAdmin(admin.ModelAdmin):
     list_display = ('id', 'user', 'department', 'designation', 'date_of_joining', 'status')
     search_fields = ('user__full_name')
