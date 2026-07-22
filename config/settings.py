@@ -117,6 +117,14 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+AUTH_USER_MODEL = "accounts.User"
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "noreply@onboardhub.local"
+
+LOGIN_URL = "login"
+LOGIN_REDIRECT_URL = "/pre-onboarding/dashboard/"
+LOGOUT_REDIRECT_URL = "login"
 
 # Internationalization
 # https://docs.djangoproject.com/en/5.2/topics/i18n/
