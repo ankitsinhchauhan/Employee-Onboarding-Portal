@@ -1,48 +1,87 @@
 <header class="dashboard-header sticky-top">
-    <div class="d-flex align-items-center justify-content-between gap-3 h-100 px-3 px-xl-4">
-        <div class="d-flex align-items-center gap-3 min-w-0">
-            <button class="btn btn-icon d-lg-none" type="button" data-dashboard-toggle="sidebar" aria-label="Open navigation">
-                <i class="bi bi-list"></i>
-            </button>
-            <button class="btn btn-icon d-none d-lg-inline-flex" type="button" data-dashboard-toggle="collapse-sidebar" aria-label="Collapse navigation">
-                <i class="bi bi-layout-sidebar-inset"></i>
-            </button>
-            <div class="min-w-0">
-                <h1 class="dashboard-title mb-0 text-truncate">{{ page_title }}</h1>
-                <p class="dashboard-subtitle mb-0 text-truncate">Employee onboarding workspace</p>
-            </div>
-        </div>
-
-        <div class="header-actions d-flex align-items-center gap-2 gap-xl-3">
-            <form class="search-shell d-none d-md-flex align-items-center" role="search">
-                <i class="bi bi-search"></i>
-                <input type="search" class="form-control border-0 shadow-none" placeholder="Search tasks, documents, people">
-            </form>
-
-            <button class="btn btn-icon position-relative" type="button" aria-label="Notifications">
-                <i class="bi bi-bell"></i>
-                <span class="notification-dot"></span>
-            </button>
-
-            <div class="dropdown">
-                <button class="btn user-chip dropdown-toggle d-inline-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span class="avatar-circle">{{ employee_name|default:user.get_username|slice:":1"|upper }}</span>
-                    <span class="d-none d-sm-inline">{{ employee_name|default:user.get_username }}</span>
-                </button>
-                <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                    <li><a class="dropdown-item" href="{% url 'dashboard_profile' %}"><i class="bi bi-person me-2"></i>Profile</a></li>
-                    <li><a class="dropdown-item" href="{% url 'dashboard_settings' %}"><i class="bi bi-gear me-2"></i>Settings</a></li>
-                    <li><hr class="dropdown-divider"></li>
-                    <li>
-                        <form method="post" action="{% url 'logout' %}" class="px-3 py-1">
-                            {% csrf_token %}
-                            <button type="submit" class="btn btn-primary w-100 d-inline-flex align-items-center justify-content-center gap-2">
-                                Logout <i class="bi bi-box-arrow-right"></i>
-                            </button>
-                        </form>
-                    </li>
-                </ul>
-            </div>
-        </div>
+  <div
+    class="d-flex align-items-center justify-content-between gap-3 h-100 px-3 px-xl-4"
+  >
+    <div class="d-flex align-items-center gap-3 min-w-0">
+      <button
+        class="btn btn-icon d-lg-none"
+        type="button"
+        data-dashboard-toggle="sidebar"
+        aria-label="Open navigation"
+      >
+        <i class="bi bi-list"></i>
+      </button>
+      <button
+        class="btn btn-icon d-none d-lg-inline-flex"
+        type="button"
+        data-dashboard-toggle="collapse-sidebar"
+        aria-label="Collapse navigation"
+      >
+        <i class="bi bi-layout-sidebar-inset"></i>
+      </button>
+      <div class="min-w-0">
+        <h1 class="dashboard-title mb-0 text-truncate">{{ page_title }}</h1>
+        <p class="dashboard-subtitle mb-0 text-truncate">
+          Employee onboarding workspace
+        </p>
+      </div>
     </div>
+
+    <div class="header-actions d-flex align-items-center gap-2 gap-xl-3">
+      <form
+        class="search-shell d-none d-md-flex align-items-center"
+        role="search"
+      >
+        <i class="bi bi-search"></i>
+        <input
+          type="search"
+          class="form-control border-0 shadow-none"
+          placeholder="Search tasks, documents, people"
+        />
+      </form>
+
+      <a href="{% url 'dashboard_notifications' %}" class="btn btn-icon position-relative" aria-label="Notifications">
+        <i class="bi bi-bell"></i>
+        {% if notification_count %}<span class="notification-dot"></span>{% endif %}
+      </a>
+
+      <div class="dropdown">
+        <button
+          class="btn user-chip dropdown-toggle d-inline-flex align-items-center gap-2"
+          type="button"
+          data-bs-toggle="dropdown"
+          aria-expanded="false"
+        >
+          <span class="avatar-circle">{{ employee_name|default:user.get_username|slice:":1"|upper }}</span>
+          <span class="d-none d-sm-inline"
+            >{{ employee_name|default:user.get_username }}</span
+          >
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+          <li>
+            <a class="dropdown-item" href="{% url 'dashboard_profile' %}"
+              ><i class="bi bi-person me-2"></i>Profile</a
+            >
+          </li>
+          <li>
+            <a class="dropdown-item" href="{% url 'dashboard_settings' %}"
+              ><i class="bi bi-gear me-2"></i>Settings</a
+            >
+          </li>
+          <li><hr class="dropdown-divider" /></li>
+          <li>
+            <form method="post" action="{% url 'logout' %}" class="px-3 py-1">
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="btn btn-primary w-100 d-inline-flex align-items-center justify-content-center gap-2"
+              >
+                Logout <i class="bi bi-box-arrow-right"></i>
+              </button>
+            </form>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
 </header>

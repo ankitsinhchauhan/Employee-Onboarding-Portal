@@ -1,34 +1,9 @@
 /* ===================================================
-   HIREFLOW / ONBOARDHUB GLOBAL DESIGN SYSTEM
-   Bootstrap 5 + Tailwind v4 + Shadcn-compatible layer
+   ONBOARDHUB GLOBAL DESIGN SYSTEM
+   Bootstrap 5 compatible tokens and components
    =================================================== */
 
-@import "tailwindcss";
-@import "tw-animate-css";
-@import "shadcn/tailwind.css";
-
 :root {
-  /* Tailwind / Shadcn-style semantic tokens */
-  --background: oklch(0.985 0.003 247.858);
-  --foreground: oklch(0.145 0.02 252.23);
-  --card: oklch(1 0 0);
-  --card-foreground: oklch(0.145 0.02 252.23);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0.02 252.23);
-  --primary: oklch(0.54 0.22 258);
-  --primary-foreground: oklch(0.985 0.003 247.858);
-  --secondary: oklch(0.96 0.01 248);
-  --secondary-foreground: oklch(0.21 0.02 252);
-  --muted: oklch(0.96 0.01 248);
-  --muted-foreground: oklch(0.52 0.02 250);
-  --accent: oklch(0.93 0.04 255);
-  --accent-foreground: oklch(0.21 0.02 252);
-  --destructive: oklch(0.58 0.24 27);
-  --border: oklch(0.91 0.01 248);
-  --input: oklch(0.91 0.01 248);
-  --ring: oklch(0.54 0.22 258);
-
-  /* Brand palette */
   --brand-blue: #1d61f2;
   --brand-blue-hover: #144bc6;
   --brand-blue-deep: #1545d8;
@@ -42,7 +17,8 @@
   --card-radius: 18px;
   --box-shadow-subtle: 0 4px 20px rgba(0, 0, 0, 0.04);
   --navbar-height: 76px;
-
+  --background: #f8fafc;
+  --foreground: #0f172a;
   --primary: #2563eb;
   --primary-hover: #1d4ed8;
   --bg: #f8fafc;

@@ -3,11 +3,12 @@ from django.db import models
 
 
 class UserManager(BaseUserManager):
-    def create_user(self, company_email=None, password=None, **extra_fields):
-        if not extra_fields.get("personal_email"):
+    def create_user(self, personal_email, password=None, **extra_fields):
+        if not personal_email:
             raise ValueError("Personal email is required")
 
-        user = self.model(company_email=company_email, **extra_fields)
+        personal_email = self.normalize_email(personal_email)
+        user = self.model(personal_email=personal_email, **extra_fields)
         if password:
             user.set_password(password)
         else:
@@ -15,14 +16,19 @@ class UserManager(BaseUserManager):
         user.save(using=self._db)
         return user
 
-    def create_superuser(self, company_email, password=None, **extra_fields):
+    def create_superuser(self, personal_email, password=None, **extra_fields):
         extra_fields.setdefault("is_staff", True)
         extra_fields.setdefault("is_superuser", True)
         extra_fields.setdefault("role", User.Role.ADMIN)
         extra_fields.setdefault("status", User.Status.ACTIVE)
         extra_fields.setdefault("is_active", True)
 
-        return self.create_user(company_email=company_email, password=password, **extra_fields)
+        if extra_fields.get("is_staff") is not True:
+            raise ValueError("Superuser must have is_staff=True.")
+        if extra_fields.get("is_superuser") is not True:
+            raise ValueError("Superuser must have is_superuser=True.")
+
+        return self.create_user(personal_email, password, **extra_fields)
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -61,5 +67,5 @@ class User(AbstractBaseUser, PermissionsMixin):
     def __str__(self):
         return self.company_email or self.personal_email
 
-AUTH_USER_MODEL = "accounts.User"
-
+    def get_display_status(self):
+        return self.get_status_display()

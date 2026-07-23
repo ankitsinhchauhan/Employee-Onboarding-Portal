@@ -1,189 +1,251 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Home - OnboardHub{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block title %}Home -
+OnboardHub{%endblock %} {% block content %}
 <div class="container py-5">
+  <!-- 1. HERO SECTION -->
+  <section
+    class="text-center mx-auto py-5 section-reveal"
+    style="max-width: 860px"
+  >
+    <h1 class="fw-bold mb-3 text-dark">
+      Modern Employee <span class="text-brand">Onboarding</span> Made Simple
+    </h1>
 
-    <!-- 1. HERO SECTION -->
-    <section class="text-center mx-auto py-5 section-reveal" style="max-width: 860px;">
-        <h1 class="fw-bold mb-3 text-dark">
-            Modern Employee <span class="text-brand">Onboarding</span> Made Simple
-        </h1>
+    <p class="text-muted fs-5 mb-4">
+      Streamline HR processes, reduce manual work, and create an exceptional
+      <br />
+      experience for new employees from day one.
+    </p>
 
-        <p class="text-muted fs-5 mb-4" >
-            Streamline HR processes, reduce manual work, and create an exceptional <br> experience for new employees from day one.
-        </p>
+    <div class="d-flex justify-content-center gap-3 flex-wrap">
+      <a
+        href="{% url 'login' %}"
+        class="btn btn-primary-custom d-inline-flex align-items-center gap-2 px-4 py-3"
+      >
+        Get Started <i class="bi bi-arrow-right"></i>
+      </a>
+      <a href="#features" class="btn btn-outline-custom px-4 py-3"
+        >Learn More</a
+      >
+    </div>
+  </section>
 
-        <div class="d-flex justify-content-center gap-3 flex-wrap">
-            <a href="{% url 'login' %}" class="btn btn-primary-custom d-inline-flex align-items-center gap-2 px-4 py-3">
-                Get Started <i class="bi bi-arrow-right"></i>
-            </a>
-            <a href="#features" class="btn btn-outline-custom px-4 py-3">Learn More</a>
+  <!-- 2. METRICS / STATS BAR -->
+  <section
+    class="row g-4 mb-5 mt-1 section-reveal"
+    style="animation-delay: 120ms"
+  >
+    <div class="col-md-4">
+      <div class="custom-card p-4 text-center h-100 hover-zoom">
+        <h2 class="fw-bold display-8 text-brand mb-2">500+</h2>
+        <p class="text-muted mb-0">Companies Trust Us</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="custom-card p-4 text-center h-100 hover-zoom">
+        <h2 class="fw-bold display-8 text-brand mb-2">50K+</h2>
+        <p class="text-muted mb-0">Employees Onboarded</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="custom-card p-4 text-center h-100 hover-zoom">
+        <h2 class="fw-bold display-8 text-brand mb-2">98%</h2>
+        <p class="text-muted mb-0">Satisfaction Rate</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. FEATURE GRID -->
+  <section
+    id="features"
+    class="my-5 pt-5 section-reveal"
+    style="animation-delay: 180ms"
+  >
+    <div class="text-center mb-4">
+      <h2 class="fw-bold h2 mb-3">Powerful Features</h2>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="custom-card p-4 h-100">
+          <div class="icon-circle mb-3"><i class="bi bi-person"></i></div>
+          <h4 class="fw-bold fs-5 mb-2">Employee Management</h4>
+          <p class="text-muted small mb-0">
+            Manage all employee information in one centralized location with
+            ease.
+          </p>
         </div>
-    </section>
+      </div>
 
-    <!-- 2. METRICS / STATS BAR -->
-    <section class="row g-4 mb-5 mt-1 section-reveal" style="animation-delay: 120ms;">
-        <div class="col-md-4">
-            <div class="custom-card p-4 text-center h-100 hover-zoom">
-                <h2 class="fw-bold display-8 text-brand mb-2">500+</h2>
-                <p class="text-muted mb-0">Companies Trust Us</p>
-            </div>
+      <div class="col-md-4">
+        <div class="custom-card p-4 h-100">
+          <div class="icon-circle mb-3">
+            <i class="bi bi-check2-circle"></i>
+          </div>
+          <h4 class="fw-bold fs-5 mb-2">Onboarding Workflow</h4>
+          <p class="text-muted small mb-0">
+            Automated workflows guide employees through every step of
+            onboarding.
+          </p>
         </div>
-        <div class="col-md-4">
-            <div class="custom-card p-4 text-center h-100 hover-zoom">
-                <h2 class="fw-bold display-8 text-brand mb-2">50K+</h2>
-                <p class="text-muted mb-0">Employees Onboarded</p>
-            </div>
-        </div>
-        <div class="col-md-4">
-            <div class="custom-card p-4 text-center h-100 hover-zoom">
-                <h2 class="fw-bold display-8 text-brand mb-2">98%</h2>
-                <p class="text-muted mb-0">Satisfaction Rate</p>
-            </div>
-        </div>
-    </section>
+      </div>
 
-    <!-- 3. FEATURE GRID -->
-    <section id="features" class="my-5 pt-5 section-reveal"  style="animation-delay: 180ms;">
-        <div class="text-center mb-4">
-            <h2 class="fw-bold h2 mb-3">Powerful Features</h2>
+      <div class="col-md-4">
+        <div class="custom-card p-4 h-100">
+          <div class="icon-circle mb-3">
+            <i class="bi bi-cloud-arrow-up"></i>
+          </div>
+          <h4 class="fw-bold fs-5 mb-2">Document Upload</h4>
+          <p class="text-muted small mb-0">
+            Securely collect and verify all required documents digitally.
+          </p>
         </div>
+      </div>
 
+      <div class="col-md-4">
+        <div class="custom-card p-4 h-100">
+          <div class="icon-circle mb-3"><i class="bi bi-shield-check"></i></div>
+          <h4 class="fw-bold fs-5 mb-2">Security &amp; Compliance</h4>
+          <p class="text-muted small mb-0">
+            Enterprise-grade security with full compliance certifications.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="custom-card p-4 h-100">
+          <div class="icon-circle mb-3"><i class="bi bi-bar-chart"></i></div>
+          <h4 class="fw-bold fs-5 mb-2">Analytics &amp; Reports</h4>
+          <p class="text-muted small mb-0">
+            Gain insights into onboarding metrics and employee progress.
+          </p>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="custom-card p-4 h-100">
+          <div class="icon-circle mb-3"><i class="bi bi-people"></i></div>
+          <h4 class="fw-bold fs-5 mb-2">Role-Based Access</h4>
+          <p class="text-muted small mb-0">
+            Control access with granular permissions for different user roles.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4. HOW IT WORKS -->
+  <section
+    id="how-it-works"
+    class="my-5 pt-5 section-reveal"
+    style="animation-delay: 240ms"
+  >
+    <div class="blue-banner-card text-center">
+      <div class="position-relative z-1">
+        <h2 class="fw-bold mb-4">How It Works</h2>
         <div class="row g-4">
-            <div class="col-md-4">
-                <div class="custom-card p-4 h-100">
-                    <div class="icon-circle mb-3"><i class="bi bi-person"></i></div>
-                    <h4 class="fw-bold fs-5 mb-2">Employee Management</h4>
-                    <p class="text-muted small mb-0">Manage all employee information in one centralized location with ease.</p>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="custom-card p-4 h-100">
-                    <div class="icon-circle mb-3"><i class="bi bi-check2-circle"></i></div>
-                    <h4 class="fw-bold fs-5 mb-2">Onboarding Workflow</h4>
-                    <p class="text-muted small mb-0">Automated workflows guide employees through every step of onboarding.</p>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="custom-card p-4 h-100">
-                    <div class="icon-circle mb-3"><i class="bi bi-cloud-arrow-up"></i></div>
-                    <h4 class="fw-bold fs-5 mb-2">Document Upload</h4>
-                    <p class="text-muted small mb-0">Securely collect and verify all required documents digitally.</p>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="custom-card p-4 h-100">
-                    <div class="icon-circle mb-3"><i class="bi bi-shield-check"></i></div>
-                    <h4 class="fw-bold fs-5 mb-2">Security &amp; Compliance</h4>
-                    <p class="text-muted small mb-0">Enterprise-grade security with full compliance certifications.</p>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="custom-card p-4 h-100">
-                    <div class="icon-circle mb-3"><i class="bi bi-bar-chart"></i></div>
-                    <h4 class="fw-bold fs-5 mb-2">Analytics &amp; Reports</h4>
-                    <p class="text-muted small mb-0">Gain insights into onboarding metrics and employee progress.</p>
-                </div>
-            </div>
-
-            <div class="col-md-4">
-                <div class="custom-card p-4 h-100">
-                    <div class="icon-circle mb-3"><i class="bi bi-people"></i></div>
-                    <h4 class="fw-bold fs-5 mb-2">Role-Based Access</h4>
-                    <p class="text-muted small mb-0">Control access with granular permissions for different user roles.</p>
-                </div>
-            </div>
+          <div class="col-12 col-md-3">
+            <div class="step-circle">1</div>
+            <h5 class="fw-bold">Create Account</h5>
+            <p class="small text-white-50 mb-0">
+              Add new employees to the system with basic information.
+            </p>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="step-circle">2</div>
+            <h5 class="fw-bold">Send Invitations</h5>
+            <p class="small text-white-50 mb-0">
+              Automatically send onboarding invitations via email.
+            </p>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="step-circle">3</div>
+            <h5 class="fw-bold">Complete Tasks</h5>
+            <p class="small text-white-50 mb-0">
+              Employees complete their onboarding checklist.
+            </p>
+          </div>
+          <div class="col-12 col-md-3">
+            <div class="step-circle">4</div>
+            <h5 class="fw-bold">Go Live</h5>
+            <p class="small text-white-50 mb-0">
+              Once approved, employees are ready to start.
+            </p>
+          </div>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <!-- 4. HOW IT WORKS -->
-    <section id="how-it-works" class="my-5 pt-5 section-reveal" style="animation-delay: 240ms;">
-        <div class="blue-banner-card text-center">
-            <div class="position-relative z-1">
-                <h2 class="fw-bold mb-4">How It Works</h2>
-                <div class="row g-4">
-                    <div class="col-12 col-md-3">
-                        <div class="step-circle">1</div>
-                        <h5 class="fw-bold">Create Account</h5>
-                        <p class="small text-white-50 mb-0">Add new employees to the system with basic information.</p>
-                    </div>
-                    <div class="col-12 col-md-3">
-                        <div class="step-circle">2</div>
-                        <h5 class="fw-bold">Send Invitations</h5>
-                        <p class="small text-white-50 mb-0">Automatically send onboarding invitations via email.</p>
-                    </div>
-                    <div class="col-12 col-md-3">
-                        <div class="step-circle">3</div>
-                        <h5 class="fw-bold">Complete Tasks</h5>
-                        <p class="small text-white-50 mb-0">Employees complete their onboarding checklist.</p>
-                    </div>
-                    <div class="col-12 col-md-3">
-                        <div class="step-circle">4</div>
-                        <h5 class="fw-bold">Go Live</h5>
-                        <p class="small text-white-50 mb-0">Once approved, employees are ready to start.</p>
-                    </div>
-                </div>
-            </div>
+  <!-- 5. WHY CHOOSE US -->
+  <section
+    id="why-choose-us"
+    class="my-5 pt-5 section-reveal"
+    style="animation-delay: 300ms"
+  >
+    <div class="text-center mb-4">
+      <h2 class="fw-bold h2 mb-3">Why Choose Us</h2>
+    </div>
+
+    <div class="custom-card p-4 p-md-5 mx-auto" style="max-width: 1290px">
+      <div class="d-flex flex-column gap-3">
+        <div class="d-flex align-items-center gap-3">
+          <i class="bi bi-check-circle-fill text-success fs-4"></i>
+          <span class="fs-6 text-dark"
+            >Reduce onboarding time from weeks to days</span
+          >
         </div>
-    </section>
-
-    <!-- 5. WHY CHOOSE US -->
-    <section id="why-choose-us" class="my-5 pt-5 section-reveal" style="animation-delay: 300ms;">
-        <div class="text-center mb-4">
-            <h2 class="fw-bold h2 mb-3">Why Choose Us</h2>
+        <div class="d-flex align-items-center gap-3">
+          <i class="bi bi-check-circle-fill text-success fs-4"></i>
+          <span class="fs-6 text-dark"
+            >Improve new employee experience and engagement</span
+          >
         </div>
-
-        <div class="custom-card p-4 p-md-5 mx-auto" style="max-width: 1290px;">
-            <div class="d-flex flex-column gap-3">
-                <div class="d-flex align-items-center gap-3">
-                    <i class="bi bi-check-circle-fill text-success fs-4"></i>
-                    <span class="fs-6 text-dark">Reduce onboarding time from weeks to days</span>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <i class="bi bi-check-circle-fill text-success fs-4"></i>
-                    <span class="fs-6 text-dark">Improve new employee experience and engagement</span>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <i class="bi bi-check-circle-fill text-success fs-4"></i>
-                    <span class="fs-6 text-dark">Ensure compliance with HR regulations</span>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <i class="bi bi-check-circle-fill text-success fs-4"></i>
-                    <span class="fs-6 text-dark">Centralize all employee documents and records</span>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <i class="bi bi-check-circle-fill text-success fs-4"></i>
-                    <span class="fs-6 text-dark">Automate repetitive HR tasks</span>
-                </div>
-                <div class="d-flex align-items-center gap-3">
-                    <i class="bi bi-check-circle-fill text-success fs-4"></i>
-                    <span class="fs-6 text-dark">Generate insightful analytics and reports</span>
-                </div>
-            </div>
+        <div class="d-flex align-items-center gap-3">
+          <i class="bi bi-check-circle-fill text-success fs-4"></i>
+          <span class="fs-6 text-dark"
+            >Ensure compliance with HR regulations</span
+          >
         </div>
-    </section>
-
-    <!-- 6. FINAL CTA BANNER -->
-    <section class="my-5 pt-5 section-reveal" style="animation-delay: 360ms;">
-        <div class="blue-banner-card text-center py-5">
-            <div class="position-relative z-1">
-                <h2 class="fw-bold display-6 mb-3">Ready to Transform Your Onboarding?</h2>
-                <p class="text-white-50 mb-4 fs-5">
-                    Join hundreds of companies that have streamlined their employee onboarding <br> process.
-                </p>
-                <a href="#" class="btn btn-light text-primary fw-bold px-4 py-3 d-inline-flex align-items-center gap-2 hover-zoom">
-                    Start Free Trial <i class="bi bi-arrow-right"></i>
-                </a>
-            </div>
+        <div class="d-flex align-items-center gap-3">
+          <i class="bi bi-check-circle-fill text-success fs-4"></i>
+          <span class="fs-6 text-dark"
+            >Centralize all employee documents and records</span
+          >
         </div>
-    </section>
+        <div class="d-flex align-items-center gap-3">
+          <i class="bi bi-check-circle-fill text-success fs-4"></i>
+          <span class="fs-6 text-dark">Automate repetitive HR tasks</span>
+        </div>
+        <div class="d-flex align-items-center gap-3">
+          <i class="bi bi-check-circle-fill text-success fs-4"></i>
+          <span class="fs-6 text-dark"
+            >Generate insightful analytics and reports</span
+          >
+        </div>
+      </div>
+    </div>
+  </section>
 
+  <!-- 6. FINAL CTA BANNER -->
+  <section class="my-5 pt-5 section-reveal" style="animation-delay: 360ms">
+    <div class="blue-banner-card text-center py-5">
+      <div class="position-relative z-1">
+        <h2 class="fw-bold display-6 mb-3">
+          Ready to Transform Your Onboarding?
+        </h2>
+        <p class="text-white-50 mb-4 fs-5">
+          Join hundreds of companies that have streamlined their employee
+          onboarding <br />
+          process.
+        </p>
+        <a
+          href="#"
+          class="btn btn-light text-primary fw-bold px-4 py-3 d-inline-flex align-items-center gap-2 hover-zoom"
+        >
+          Start Free Trial <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </section>
 </div>
 {% endblock %}

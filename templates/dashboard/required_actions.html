@@ -1,26 +1,25 @@
-{% extends 'dashboard/dashboard_base.html' %}
-
-{% block title %}Required Actions | OnboardHub{% endblock %}
-
-{% block dashboard_content %}
+{% extends 'dashboard/dashboard_base.html' %} {% block title %}Required Actions
+| OnboardHub{% endblock %} {% block dashboard_content %}
 <div class="row g-4">
-    <div class="col-12">
-        <div class="card-surface p-4 p-xl-5">
-            <div class="eyebrow mb-2">Required Actions</div>
-            <h2 class="h3 mb-2">Pending tasks</h2>
-            <p class="text-muted mb-0">Finish the actions below to keep your onboarding moving.</p>
-        </div>
+  <div class="col-12">
+    <div class="card-surface p-4 p-xl-5">
+      <div class="eyebrow mb-2">Required Actions</div>
+      <h2 class="h3 mb-2">Pending tasks</h2>
+      <p class="text-muted mb-0">
+        Finish the actions below to keep your onboarding moving.
+      </p>
     </div>
+  </div>
 
-    {% for action in actions %}
-        <div class="col-md-6">
-            <div class="card-surface p-4 h-100 action-card">
-                <div class="action-icon"><i class="bi bi-{{ action.icon }}"></i></div>
-                <h3 class="h5 mb-2">{{ action.title }}</h3>
-                <p class="text-muted">{{ action.description }}</p>
-                <a href="#" class="btn btn-primary">{{ action.button }}</a>
-            </div>
-        </div>
-    {% endfor %}
+  {% for action in actions %}
+  <div class="col-md-6">
+    <div class="card-surface p-4 h-100 action-card">
+      <div class="action-icon"><i class="bi bi-{{ action.icon }}"></i></div>
+      <h3 class="h5 mb-2">{{ action.title }}</h3>
+      <p class="text-muted">{{ action.description }}</p>
+      <a href="{% url action.url_name %}" class="btn btn-primary">{{ action.button }}</a>
+    </div>
+  </div>
+  {% endfor %}
 </div>
 {% endblock %}

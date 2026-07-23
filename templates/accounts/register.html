@@ -1,9 +1,5 @@
-{% extends 'base.html' %}
-{% load static %}
-
-{% block title %}Register | Enterprise Employee Onboarding System{% endblock %}
-
-{% block content %}
+{% extends 'base.html' %} {% load static %} {% block title %}Register |
+Enterprise Employee Onboarding System{% endblock %} {% block content %}
 <section class="auth-page">
   <div class="container">
     <div class="row justify-content-center align-items-center min-vh-100 py-5">
@@ -14,33 +10,73 @@
               <i class="bi bi-person-plus"></i>
             </div> -->
             <h1 class="h3 fw-bold mb-2">Create Account</h1>
-            <p class="text-muted mb-0">Create your employee onboarding account</p>
+            <p class="text-muted mb-0">
+              Create your employee onboarding account
+            </p>
           </div>
 
-          <form method="post" class="needs-validation" novalidate id="registerForm">
+          <form
+            method="post"
+            class="needs-validation"
+            novalidate
+            id="registerForm"
+          >
             {% csrf_token %}
 
             <div class="mb-3">
               <label for="fullName" class="form-label">Full Name</label>
-              <input type="text" class="form-control" id="fullName" name="full_name" placeholder="Enter your full name" required>
+              <input
+                type="text"
+                class="form-control"
+                id="fullName"
+                name="full_name"
+                placeholder="Enter your full name"
+                required
+              />
               <div class="invalid-feedback">Full name is required.</div>
             </div>
 
             <div class="mb-3">
               <label for="personalEmail" class="form-label">Email</label>
-              <input type="email" class="form-control" id="personalEmail" name="email" placeholder="name@example.com" required>
-              <div class="invalid-feedback">Please enter a valid email address.</div>
+              <input
+                type="email"
+                class="form-control"
+                id="personalEmail"
+                name="email"
+                placeholder="name@example.com"
+                required
+              />
+              <div class="invalid-feedback">
+                Please enter a valid email address.
+              </div>
             </div>
 
             <div class="mb-3">
               <label for="password" class="form-label">Password</label>
               <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-lock"></i></span>
-                <input type="password" class="form-control" id="password" name="password1" placeholder="Create password" minlength="8" required data-password-field>
-                <button class="btn btn-outline-secondary password-toggle" type="button" data-toggle-password data-target="#password" aria-label="Toggle password">
+                <input
+                  type="password"
+                  class="form-control"
+                  id="password"
+                  name="password1"
+                  placeholder="Create password"
+                  minlength="8"
+                  required
+                  data-password-field
+                />
+                <button
+                  class="btn btn-outline-secondary password-toggle"
+                  type="button"
+                  data-toggle-password
+                  data-target="#password"
+                  aria-label="Toggle password"
+                >
                   <i class="bi bi-eye"></i>
                 </button>
-                <div class="invalid-feedback">Password must be at least 8 characters.</div>
+                <div class="invalid-feedback">
+                  Password must be at least 8 characters.
+                </div>
               </div>
 
               <!-- <div class="mt-2">
@@ -55,20 +91,47 @@
             </div>
 
             <div class="mb-4">
-              <label for="confirmPassword" class="form-label">Confirm Password</label>
+              <label for="confirmPassword" class="form-label"
+                >Confirm Password</label
+              >
               <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
-                <input type="password" class="form-control" id="confirmPassword" name="password2" placeholder="Re-enter password" minlength="8" required data-confirm-password="#password">
-                <button class="btn btn-outline-secondary password-toggle" type="button" data-toggle-password data-target="#confirmPassword" aria-label="Toggle confirm password">
+                <span class="input-group-text"
+                  ><i class="bi bi-shield-lock"></i
+                ></span>
+                <input
+                  type="password"
+                  class="form-control"
+                  id="confirmPassword"
+                  name="password2"
+                  placeholder="Re-enter password"
+                  minlength="8"
+                  required
+                  data-confirm-password="#password"
+                />
+                <button
+                  class="btn btn-outline-secondary password-toggle"
+                  type="button"
+                  data-toggle-password
+                  data-target="#confirmPassword"
+                  aria-label="Toggle confirm password"
+                >
                   <i class="bi bi-eye"></i>
                 </button>
                 <div class="invalid-feedback">Passwords do not match.</div>
               </div>
             </div>
 
-            <button type="submit" class="btn btn-enterprise w-100 auth-submit-btn" id="registerSubmitBtn">
+            <button
+              type="submit"
+              class="btn btn-enterprise w-100 auth-submit-btn"
+              id="registerSubmitBtn"
+            >
               <span class="btn-label">Create Account</span>
-              <span class="btn-spinner spinner-border spinner-border-sm ms-2" role="status" aria-hidden="true"></span>
+              <span
+                class="btn-spinner spinner-border spinner-border-sm ms-2"
+                role="status"
+                aria-hidden="true"
+              ></span>
             </button>
 
             <p class="text-center mt-4 mb-0">
