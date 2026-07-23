@@ -69,9 +69,7 @@
           {{ employee_name|default:user.get_username|slice:":1"|upper }}
         </div>
         <div>
-          <div class="fw-semibold text-white">
-            {{ employee_name|default:user.get_username }}
-          </div>
+          <div class="fw-semibold text-white">{{ employee_name}}</div>
           <div class="text-white-50 small">
             {{ employee_id }} · {{ department }}
           </div>

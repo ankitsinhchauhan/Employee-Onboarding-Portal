@@ -1,4 +1,4 @@
-<header class="dashboard-header sticky-top">
+<header class="dashboard-header w-100 sticky-top shadow-sm bg-body">
   <div
     class="d-flex align-items-center justify-content-between gap-3 h-100 px-3 px-xl-4"
   >
@@ -28,7 +28,7 @@
     </div>
 
     <div class="header-actions d-flex align-items-center gap-2 gap-xl-3">
-      <form
+      <!-- <form
         class="search-shell d-none d-md-flex align-items-center"
         role="search"
       >
@@ -38,11 +38,17 @@
           class="form-control border-0 shadow-none"
           placeholder="Search tasks, documents, people"
         />
-      </form>
+      </form> -->
 
-      <a href="{% url 'dashboard_notifications' %}" class="btn btn-icon position-relative" aria-label="Notifications">
+      <a
+        href="{% url 'dashboard_notifications' %}"
+        class="btn btn-icon position-relative"
+        aria-label="Notifications"
+      >
         <i class="bi bi-bell"></i>
-        {% if notification_count %}<span class="notification-dot"></span>{% endif %}
+        {% if notification_count %}
+        <span class="notification-dot"></span>
+        {% endif %}
       </a>
 
       <div class="dropdown">
@@ -52,10 +58,10 @@
           data-bs-toggle="dropdown"
           aria-expanded="false"
         >
-          <span class="avatar-circle">{{ employee_name|default:user.get_username|slice:":1"|upper }}</span>
-          <span class="d-none d-sm-inline"
-            >{{ employee_name|default:user.get_username }}</span
+          <span class="avatar-circle"
+            >{{ employee_name|slice:":1"|upper }}</span
           >
+          <span class="d-none d-sm-inline">{{ employee_name }}</span>
         </button>
         <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
           <li>

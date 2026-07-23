@@ -69,7 +69,7 @@ class LogoutView(View):
 
     def post(self, request):
         logout(request)
-        return redirect("login")
+        return redirect("/")
 
 
 class ForgotPasswordView(View):

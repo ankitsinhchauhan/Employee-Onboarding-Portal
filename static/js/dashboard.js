@@ -21,11 +21,11 @@
     body.classList.add("sidebar-collapsed");
   }
 
-  collapseButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      setCollapsed(!body.classList.contains("sidebar-collapsed"));
-    });
-  });
+  // collapseButtons.forEach((button) => {
+  //   button.addEventListener("click", () => {
+  //     setCollapsed(!body.classList.contains("sidebar-collapsed"));
+  //   });
+  // });
 
   sidebarButtons.forEach((button) => {
     button.addEventListener("click", () => {
