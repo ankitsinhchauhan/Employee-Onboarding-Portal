@@ -123,7 +123,7 @@ EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
 DEFAULT_FROM_EMAIL = "noreply@onboardhub.local"
 
 LOGIN_URL = "login"
-LOGIN_REDIRECT_URL = "/pre-onboarding/dashboard/"
+LOGIN_REDIRECT_URL = "/dashboard/"
 LOGOUT_REDIRECT_URL = "login"
 
 # Internationalization

@@ -1,0 +1,113 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+{% block title %}Dashboard | OnboardHub{% endblock %}
+
+{% block dashboard_content %}
+<div class="row g-4">
+    <div class="col-12">
+        <section class="hero-panel card-surface p-4 p-xl-5">
+            <div class="d-flex flex-column flex-lg-row justify-content-between gap-4">
+                <div class="flex-grow-1">
+                    <div class="eyebrow mb-3">Welcome Back</div>
+                    <h2 class="display-6 fw-semibold mb-3">Welcome Back {{ employee_name }}</h2>
+                    <p class="text-muted mb-4">Track your onboarding progress, review verification updates, and complete the items waiting for you.</p>
+                    <div class="row g-3 small text-muted">
+                        <div class="col-sm-4"><div class="info-pill"><span>Employee ID</span><strong>{{ employee_id }}</strong></div></div>
+                        <div class="col-sm-4"><div class="info-pill"><span>Department</span><strong>{{ department }}</strong></div></div>
+                        <div class="col-sm-4"><div class="info-pill"><span>Joining Date</span><strong>{{ joining_date|date:"d M Y" }}</strong></div></div>
+                    </div>
+                </div>
+                <div class="progress-card">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="text-muted">Overall Progress</span>
+                        <strong>{{ overall_progress }}%</strong>
+                    </div>
+                    <div class="progress dashboard-progress mb-3">
+                        <!-- <div class="progress-bar" style="width: {{ overall_progress }}%"></div> -->
+                    </div>
+                    <div class="text-muted small">Current step: <strong class="text-body">{{ current_step }}</strong></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <div class="col-md-6 col-xl-3">
+        <div class="metric-card card-surface h-100">
+            <span class="metric-label">Profile Completion</span>
+            <div class="metric-value">{{ profile_completion }}%</div>
+            <!-- <div class="progress metric-progress"><div class="progress-bar" style="width: {{ profile_completion }}%"></div></div> -->
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="metric-card card-surface h-100">
+            <span class="metric-label">Document Completion</span>
+            <div class="metric-value">{{ document_completion }}%</div>
+            <!-- <div class="progress metric-progress"><div class="progress-bar bg-success" style="width: {{ document_completion }}%"></div></div> -->
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="metric-card card-surface h-100">
+            <span class="metric-label">Verification Status</span>
+            <div class="metric-value">{{ verification_status }}</div>
+            <div class="status-badge status-warning">In progress</div>
+        </div>
+    </div>
+    <div class="col-md-6 col-xl-3">
+        <div class="metric-card card-surface h-100">
+            <span class="metric-label">Overall Status</span>
+            <div class="metric-value">{{ overall_status }}</div>
+            <div class="status-badge status-info">Onboarding active</div>
+        </div>
+    </div>
+
+    <div class="col-xl-7">
+        <section class="card-surface p-4 h-100">
+            <div class="section-header mb-4">
+                <div>
+                    <h3 class="h5 mb-1">Onboarding Steps Timeline</h3>
+                    <p class="text-muted mb-0">Status of the core onboarding stages.</p>
+                </div>
+            </div>
+            <div class="timeline-list">
+                {% for step in timeline_steps %}
+                    <div class="timeline-item {{ step.status }}">
+                        <div class="timeline-marker"></div>
+                        <div class="timeline-body">
+                            <div class="d-flex justify-content-between gap-3">
+                                <strong>{{ step.title }}</strong>
+                                <span class="timeline-state">{{ step.status|title }}</span>
+                            </div>
+                            <p class="text-muted mb-0">{{ step.note }}</p>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </section>
+    </div>
+
+    <div class="col-xl-5">
+        <section class="card-surface p-4 h-100">
+            <div class="section-header mb-4">
+                <div>
+                    <h3 class="h5 mb-1">Quick Actions</h3>
+                    <p class="text-muted mb-0">Complete tasks that are still pending.</p>
+                </div>
+            </div>
+            <div class="d-grid gap-3">
+                <a href="{% url 'dashboard_profile' %}" class="action-row">
+                    <div><strong>Edit profile</strong><p class="mb-0 text-muted small">Update contact and education information</p></div>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+                <a href="{% url 'dashboard_documents' %}" class="action-row">
+                    <div><strong>Review documents</strong><p class="mb-0 text-muted small">Check uploaded files and replace rejected items</p></div>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+                <a href="{% url 'dashboard_approval_status' %}" class="action-row">
+                    <div><strong>View approvals</strong><p class="mb-0 text-muted small">Follow the verification timeline</p></div>
+                    <i class="bi bi-arrow-right"></i>
+                </a>
+            </div>
+        </section>
+    </div>
+</div>
+{% endblock %}

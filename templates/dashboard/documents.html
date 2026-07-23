@@ -1,0 +1,53 @@
+{% extends 'dashboard/dashboard_base.html' %}
+
+{% block title %}Documents | OnboardHub{% endblock %}
+
+{% block dashboard_content %}
+<div class="card-surface p-4 p-xl-5 mb-4">
+    <div class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center">
+        <div>
+            <div class="eyebrow mb-2">Documents</div>
+            <h2 class="h3 mb-2">Uploaded documents</h2>
+            <p class="text-muted mb-0">Review the document status and replace or upload missing files.</p>
+        </div>
+        <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-outline-secondary">Preview</button>
+            <button class="btn btn-outline-secondary">Replace</button>
+            <button class="btn btn-primary">Upload</button>
+        </div>
+    </div>
+</div>
+
+<div class="card-surface p-0 overflow-hidden">
+    <div class="table-responsive">
+        <table class="table align-middle mb-0 dashboard-table">
+            <thead>
+                <tr>
+                    <th>Document</th>
+                    <th>Status</th>
+                    <th>Uploaded</th>
+                    <th class="text-end">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for document in documents %}
+                    <tr>
+                        <td class="fw-semibold">{{ document.name }}</td>
+                        <td>
+                            <span class="status-badge status-{{ document.status|lower }}">{{ document.status }}</span>
+                        </td>
+                        <td>{{ document.uploaded }}</td>
+                        <td class="text-end">
+                            <div class="btn-group btn-group-sm">
+                                <button class="btn btn-outline-secondary">Preview</button>
+                                <button class="btn btn-outline-secondary">Replace</button>
+                                <button class="btn btn-primary">Upload</button>
+                            </div>
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

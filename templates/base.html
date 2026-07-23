@@ -16,7 +16,7 @@
 <body class="d-flex flex-column">
 
     <!-- Fixed Navbar -->
-    <nav class="navbar navbar-expand-lg fixed-top nav-glass border-bottom shadow-sm py-3">
+    <nav class="navbar navbar-expand-lg navbar-light fixed-top nav-glass border-bottom shadow-sm py-3">
         <div class="container">
             <a class="navbar-brand d-flex align-items-center gap-2 fw-bold text-dark" href="/">
                 <span class="navbar-brand-badge">
@@ -30,11 +30,39 @@
             </button>
 
             <div class="collapse navbar-collapse" id="topNavbar">
-                <div class="ms-lg-auto d-flex align-items-center gap-2">
-                    <a href="{% url 'login' %}" class="btn btn-primary-custom btn-sm d-inline-flex align-items-center gap-2">
-                        Sign In
-                        <i class="bi bi-box-arrow-in-right"></i>
-                    </a>
+                <div class="ms-lg-auto d-flex flex-column flex-lg-row align-items-lg-center gap-2 gap-lg-3">
+                    {% if user.is_authenticated %}
+                        <a href="{% url 'dashboard' %}" class="btn btn-outline-custom btn-sm d-inline-flex align-items-center gap-2">
+                            Dashboard
+                            <i class="bi bi-grid-1x2-fill"></i>
+                        </a>
+                        <div class="dropdown">
+                            <button class="btn btn-light btn-sm dropdown-toggle d-inline-flex align-items-center gap-2" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <span class="avatar-circle" style="width: 32px; height: 32px; font-size: 0.8rem;">{{ user.full_name|default:user.get_username|slice:":1"|upper }}</span>
+                                {{ user.full_name|default:user.get_username }}
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
+                                <li><a class="dropdown-item" href="{% url 'dashboard' %}"><i class="bi bi-speedometer2 me-2"></i>Dashboard</a></li>
+                                <li><a class="dropdown-item" href="{% url 'dashboard_profile' %}"><i class="bi bi-person me-2"></i>Profile</a></li>
+                                <li><a class="dropdown-item" href="{% url 'dashboard_settings' %}"><i class="bi bi-gear me-2"></i>Settings</a></li>
+                                <li><hr class="dropdown-divider"></li>
+                                <li>
+                                    <form method="post" action="{% url 'logout' %}" class="px-3 py-1">
+                                        {% csrf_token %}
+                                        <button type="submit" class="btn btn-primary-custom btn-sm w-100 d-inline-flex align-items-center justify-content-center gap-2">
+                                            Logout
+                                            <i class="bi bi-box-arrow-right"></i>
+                                        </button>
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    {% else %}
+                        <a href="{% url 'login' %}" class="btn btn-primary-custom btn-sm d-inline-flex align-items-center gap-2">
+                            Sign In
+                            <i class="bi bi-box-arrow-in-right"></i>
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>

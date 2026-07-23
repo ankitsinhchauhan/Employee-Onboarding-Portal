@@ -8,6 +8,11 @@ from .forms import ForgotPasswordForm, LoginForm, RegisterForm
 from .models import User
 
 
+class HomeView(View):
+    def get(self, request):
+        return render(request, "home.html")
+
+
 class RegisterView(View):
     template_name = "accounts/register.html"
 
@@ -51,7 +56,7 @@ class LoginView(View):
                 request.session.set_expiry(0)
 
             messages.success(request, "Login successful")
-            return redirect("pre_onboarding_dashboard")
+            return redirect("dashboard")
 
         messages.error(request, "Invalid Email or Password")
         return render(request, self.template_name, {"form": form})
@@ -86,15 +91,7 @@ class PreOnboardingDashboardView(LoginRequiredMixin, View):
     login_url = "login"
 
     def get(self, request):
-        user = request.user
-        context = {
-            "profile_completion": int(getattr(user, "profile_completion_percentage", 0) or 0),
-            "document_completion": int(getattr(user, "document_completion_percentage", 0) or 0),
-            "verification_status": getattr(user, "verification_status", "Pending") or "Pending",
-            "overall_status": getattr(user, "status", "Pending") or "Pending",
-        }
-        context["progress_total"] = int((context["profile_completion"] + context["document_completion"]) / 2)
-        return render(request, self.template_name, context)
+        return redirect("dashboard")
 
 
 class CompleteProfileView(LoginRequiredMixin, View):
