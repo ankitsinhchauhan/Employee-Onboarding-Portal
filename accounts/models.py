@@ -1,5 +1,6 @@
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin
 from django.db import models
+from django.utils import timezone
 
 
 class UserManager(BaseUserManager):
@@ -69,3 +70,27 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def get_display_status(self):
         return self.get_status_display()
+
+
+class AuditLog(models.Model):
+    """Tracks administrative actions performed by users."""
+
+    user = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="audit_logs",
+    )
+    action = models.CharField(max_length=50)
+    details = models.TextField(blank=True)
+    ip_address = models.GenericIPAddressField(blank=True, null=True)
+    timestamp = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        ordering = ["-timestamp"]
+        verbose_name = "Audit Log"
+        verbose_name_plural = "Audit Logs"
+
+    def __str__(self):
+        return f"[{self.timestamp.strftime('%Y-%m-%d %H:%M')}] {self.action} by {self.user}"

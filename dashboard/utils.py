@@ -1,185 +1,87 @@
-from documents.models import Document
+"""
+Dashboard utility functions that delegate to the DashboardService layer.
+This module exists for backward compatibility with the class-based views 
+in dashboard/views.py.
+"""
 from employees.models import EmployeeProfile
-
-PROFILE_FIELDS = (
-    "department",
-    "designation",
-    "phone_number",
-    "address",
-    "date_of_birth",
-    "joining_date",
-    "emergency_contact",
-)
-
-DOCUMENT_FIELDS = (
-    ("Resume", "resume"),
-    ("Aadhaar Card", "aadhaar_card"),
-    ("PAN Card", "pan_card"),
-    ("Degree Certificate", "degree_certificate"),
-    ("Profile Photo", "passport_photo"),
-)
+from employees.services.dashboard_service import DashboardService
 
 
 def get_employee_profile(user):
-    try:
-        return user.employeeprofile
-    except EmployeeProfile.DoesNotExist:
-        return None
-
-
-def get_user_document(user):
-    return Document.objects.filter(user=user).order_by("-uploaded_at").first()
+    """Get employee profile (backward-compatible wrapper)."""
+    return DashboardService.get_employee_profile(user)
 
 
 def calculate_profile_completion(profile):
+    """
+    Calculate profile completion (backward-compatible wrapper).
+    Accepts a profile object like the old API.
+    """
     if not profile:
         return 0
-    filled = sum(1 for field in PROFILE_FIELDS if getattr(profile, field, None))
-    return int((filled / len(PROFILE_FIELDS)) * 100)
+    # If a profile is passed, we use the service with the profile's user
+    try:
+        employee = DashboardService.get_employee_profile(profile.user)
+        return DashboardService.calculate_profile_completion(employee)
+    except Exception:
+        return 0
 
 
 def calculate_document_completion(document):
-    if not document:
+    """
+    Calculate document completion (backward-compatible wrapper).
+    Old API passed a document - we need the employee.
+    """
+    try:
+        if document and hasattr(document, "employee"):
+            return DashboardService.calculate_document_completion(document.employee)
         return 0
-    filled = sum(1 for _, field in DOCUMENT_FIELDS if getattr(document, field, None))
-    return int((filled / len(DOCUMENT_FIELDS)) * 100)
-
-
-def build_document_rows(document):
-    rows = []
-    for label, field in DOCUMENT_FIELDS:
-        file_field = getattr(document, field, None) if document else None
-        if file_field:
-            rows.append(
-                {
-                    "name": label,
-                    "status": document.get_status_display(),
-                    "uploaded": document.uploaded_at.strftime("%d %b %Y"),
-                }
-            )
-        else:
-            rows.append(
-                {
-                    "name": label,
-                    "status": "Pending",
-                    "uploaded": "Not uploaded",
-                }
-            )
-    return rows
+    except Exception:
+        return 0
 
 
 def get_verification_status(user, document):
-    if document:
-        return document.get_status_display()
-    if user.status == user.Status.ACTIVE:
-        return "Approved"
-    return "In Review"
+    """Get verification status (backward-compatible wrapper)."""
+    try:
+        employee = DashboardService.get_employee_profile(user)
+        return DashboardService.get_verification_status(employee)
+    except Exception:
+        return "Not Started"
 
 
 def get_current_step(profile_completion, document_completion, verification_status):
-    if profile_completion < 100:
-        return "Complete Profile"
-    if document_completion < 100:
-        return "Upload Documents"
-    if verification_status == "Pending":
-        return "Document Verification"
-    if verification_status == "Rejected":
-        return "Resubmit Documents"
-    if verification_status == "Approved":
-        return "Awaiting Final Approval"
-    return "Document Verification"
+    """Get current onboarding step (backward-compatible)."""
+    return DashboardService.get_current_step(
+        profile_completion, document_completion, verification_status
+    )
 
 
 def build_timeline(profile_completion, document_completion, verification_status):
-    profile_done = profile_completion >= 100
-    documents_done = document_completion >= 100
-    review_current = documents_done and verification_status == "Pending"
-    review_done = verification_status == "Approved"
-    review_rejected = verification_status == "Rejected"
-
-    return [
-        {
-            "title": "Profile submitted",
-            "status": "completed" if profile_done else "current",
-            "note": "Employee details received" if profile_done else "Complete your profile details",
-        },
-        {
-            "title": "Documents uploaded",
-            "status": "completed" if documents_done else ("current" if profile_done else "pending"),
-            "note": "Required files on file" if documents_done else "Upload PAN, Aadhaar, and photo",
-        },
-        {
-            "title": "Document verification",
-            "status": (
-                "completed"
-                if review_done
-                else "current"
-                if review_current or review_rejected
-                else "pending"
-            ),
-            "note": (
-                "HR review completed"
-                if review_done
-                else "HR review in progress"
-                if review_current
-                else "Waiting for rejected document resubmission"
-                if review_rejected
-                else "Waiting for document upload"
-            ),
-        },
-        {
-            "title": "Manager approval",
-            "status": "completed" if review_done else "pending",
-            "note": "Department sign-off received" if review_done else "Waiting for department sign-off",
-        },
-        {
-            "title": "Welcome kit release",
-            "status": "completed" if review_done else "pending",
-            "note": "Assets and workspace allocation" if review_done else "Pending final approval",
-        },
-    ]
-
-
-def build_approval_timeline(user, profile, document):
-    profile_done = calculate_profile_completion(profile) >= 100
-    document_status = document.get_status_display() if document else "Pending"
-
-    return [
-        {
-            "title": "Offer accepted",
-            "status": "completed",
-            "date": user.date_joined.strftime("%d %b %Y"),
-        },
-        {
-            "title": "Profile validation",
-            "status": "completed" if profile_done else "current",
-            "date": "Completed" if profile_done else "In progress",
-        },
-        {
-            "title": "Document review",
-            "status": (
-                "completed"
-                if document_status == "Approved"
-                else "current"
-                if document_status == "Pending"
-                else "pending"
-            ),
-            "date": document.uploaded_at.strftime("%d %b %Y") if document else "Pending",
-        },
-        {
-            "title": "HR approval",
-            "status": "completed" if document_status == "Approved" else "pending",
-            "date": "Completed" if document_status == "Approved" else "Pending",
-        },
-        {
-            "title": "Manager approval",
-            "status": "completed" if user.status == user.Status.ACTIVE else "pending",
-            "date": "Completed" if user.status == user.Status.ACTIVE else "Pending",
-        },
-    ]
+    """Build onboarding timeline (backward-compatible wrapper)."""
+    # Employee not available here - build timeline without employee context
+    return DashboardService.get_onboarding_timeline(
+        None, profile_completion, document_completion, verification_status
+    )
 
 
 def build_required_actions(profile_completion, document_completion):
+    """Build required actions (backward-compatible)."""
+    return _build_required_actions_helper(profile_completion, document_completion)
+
+
+def get_user_document(user):
+    """Get the user's documents - backward compatible."""
+    try:
+        profile = EmployeeProfile.objects.get(user=user)
+        from employees.models import EmployeeDocument
+
+        return EmployeeDocument.objects.filter(employee=profile).first()
+    except (EmployeeProfile.DoesNotExist, AttributeError):
+        return None
+
+
+def _build_required_actions_helper(profile_completion, document_completion):
+    """Build required actions list."""
     actions = []
     if document_completion < 100:
         actions.append(
@@ -211,3 +113,82 @@ def build_required_actions(profile_completion, document_completion):
         }
     )
     return actions
+
+
+def build_document_rows(document):
+    """Build document rows for template - backward compatible."""
+    DOCUMENT_FIELD_MAP = {
+        "RESUME": "Resume / CV",
+        "AADHAAR": "Aadhaar Card",
+        "PAN": "PAN Card",
+        "DEGREE": "Degree Certificate",
+        "PHOTO": "Profile Photo",
+    }
+
+    rows = []
+    for doc_type, label in DOCUMENT_FIELD_MAP.items():
+        rows.append(
+            {
+                "name": label,
+                "status": "Not Uploaded",
+                "uploaded": "—",
+            }
+        )
+    return rows
+
+
+def build_approval_timeline(user, profile, document):
+    """Build approval timeline - backward compatible."""
+    try:
+        profile_completion = calculate_profile_completion(profile) or 0
+    except Exception:
+        profile_completion = 0
+
+    profile_done = profile_completion >= 100
+
+    try:
+        document_status = document.verification_status if document else "PENDING"
+    except Exception:
+        document_status = "PENDING"
+
+    status_map = {
+        "PENDING": "Pending",
+        "VERIFIED": "Approved",
+        "REJECTED": "Rejected",
+    }
+
+    display_status = status_map.get(document_status, "Pending")
+
+    return [
+        {
+            "title": "Offer accepted",
+            "status": "completed",
+            "date": user.date_joined.strftime("%d %b %Y"),
+        },
+        {
+            "title": "Profile validation",
+            "status": "completed" if profile_done else "current",
+            "date": "Completed" if profile_done else "In progress",
+        },
+        {
+            "title": "Document review",
+            "status": (
+                "completed"
+                if display_status == "Approved"
+                else "current"
+                if display_status == "Pending"
+                else "pending"
+            ),
+            "date": document.uploaded_at.strftime("%d %b %Y") if document else "Pending",
+        },
+        {
+            "title": "HR approval",
+            "status": "completed" if display_status == "Approved" else "pending",
+            "date": "Completed" if display_status == "Approved" else "Pending",
+        },
+        {
+            "title": "Manager approval",
+            "status": "completed" if user.status == user.Status.ACTIVE else "pending",
+            "date": "Completed" if user.status == user.Status.ACTIVE else "Pending",
+        },
+    ]

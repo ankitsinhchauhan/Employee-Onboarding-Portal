@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     "employees",
     "documents",
     "dashboard",
+    "departments",
     "reports",
 ]
 

@@ -12,47 +12,49 @@ OnboardHub{% endblock %} {% block dashboard_content %}
           Review the information HR needs for onboarding and verification.
         </p>
       </div>
+      {% if form %}
       <a href="#" class="btn btn-primary d-inline-flex align-items-center gap-2"
         ><i class="bi bi-pencil-square"></i>Edit Profile</a
       >
+      {% endif %}
     </div>
-  </div>
 
-  <div class="col-lg-4">
-    <div class="card-surface p-4 h-100">
-      <h3 class="h6 text-uppercase text-muted mb-4">Personal Details</h3>
-      <div class="detail-stack">
-        {% for label, value in personal_details %}
-        <div class="detail-item">
-          <span>{{ label }}</span><strong>{{ value }}</strong>
+    <div class="col-lg-4">
+      <div class="card-surface p-4 h-100">
+        <h3 class="h6 text-uppercase text-muted mb-4">Personal Details</h3>
+        <div class="detail-stack">
+          {% for label, value in personal_details %}
+          <div class="detail-item">
+            <span>{{ label }}</span><strong>{{ value }}</strong>
+          </div>
+          {% endfor %}
         </div>
-        {% endfor %}
       </div>
-    </div>
-  </div>
-  <div class="col-lg-4">
-    <div class="card-surface p-4 h-100">
-      <h3 class="h6 text-uppercase text-muted mb-4">Contact Details</h3>
-      <div class="detail-stack">
-        {% for label, value in contact_details %}
-        <div class="detail-item">
-          <span>{{ label }}</span><strong>{{ value }}</strong>
+      <div class="col-lg-4">
+        <div class="card-surface p-4 h-100">
+          <h3 class="h6 text-uppercase text-muted mb-4">Contact Details</h3>
+          <div class="detail-stack">
+            {% for label, value in contact_details %}
+            <div class="detail-item">
+              <span>{{ label }}</span><strong>{{ value }}</strong>
+            </div>
+            {% endfor %}
+          </div>
         </div>
-        {% endfor %}
-      </div>
-    </div>
-  </div>
-  <div class="col-lg-4">
-    <div class="card-surface p-4 h-100">
-      <h3 class="h6 text-uppercase text-muted mb-4">Education Details</h3>
-      <div class="detail-stack">
-        {% for label, value in education_details %}
-        <div class="detail-item">
-          <span>{{ label }}</span><strong>{{ value }}</strong>
+        <div class="col-lg-4">
+          <div class="card-surface p-4 h-100">
+            <h3 class="h6 text-uppercase text-muted mb-4">Education Details</h3>
+            <div class="detail-stack">
+              {% for label, value in education_details %}
+              <div class="detail-item">
+                <span>{{ label }}</span><strong>{{ value }}</strong>
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+          {% endblock %}
         </div>
-        {% endfor %}
       </div>
     </div>
   </div>
 </div>
-{% endblock %}
