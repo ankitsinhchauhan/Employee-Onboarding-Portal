@@ -1,12 +1,12 @@
-{% extends 'dashboard/dashboard_base.html' %} {% block title %}Dashboard |
-OnboardHub{% endblock %} {% block dashboard_content %}
+{% extends 'dashboard/dashboard_base.html' %} {% load static %} {% block title%}
+Dashboard | OnboardHub {% endblock %} {% block dashboard_content %}
 <div class="row g-4">
+  <!-- Welcome Hero -->
   <div class="col-12">
     <section class="hero-panel card-surface p-4 p-xl-5">
       <div class="d-flex flex-column flex-lg-row justify-content-between gap-4">
         <div class="flex-grow-1">
           <div class="eyebrow mb-2">Dashboard</div>
-
           <h2 class="display-8 fw-semibold mb-3">
             Welcome Back <span class="text-primary">{{ employee_name }}</span>
           </h2>
@@ -52,6 +52,7 @@ OnboardHub{% endblock %} {% block dashboard_content %}
     </section>
   </div>
 
+  <!-- Metric Cards -->
   <div class="col-md-6 col-xl-3">
     <div class="metric-card card-surface h-100">
       <span class="metric-label">Profile Completion</span>
@@ -80,17 +81,34 @@ OnboardHub{% endblock %} {% block dashboard_content %}
     <div class="metric-card card-surface h-100">
       <span class="metric-label">Verification Status</span>
       <div class="metric-value">{{ verification_status }}</div>
-      <div class="status-badge status-warning">In progress</div>
+      <div class="status-badge status-{{ verification_status|lower }}">
+        {% if verification_status == "Verified" %}
+        <i class="bi bi-check-circle-fill"></i> Verified {% elif
+        verification_status == "Pending" %}
+        <i class="bi bi-hourglass-split"></i> In Progress {% elif
+        verification_status == "Rejected" %}
+        <i class="bi bi-x-circle-fill"></i> Rejected {% else %}
+        <i class="bi bi-dash-circle"></i> Not Started {% endif %}
+      </div>
     </div>
   </div>
   <div class="col-md-6 col-xl-3">
     <div class="metric-card card-surface h-100">
       <span class="metric-label">Overall Status</span>
       <div class="metric-value">{{ overall_status }}</div>
-      <div class="status-badge status-info">Onboarding active</div>
+      <div class="status-badge status-info">
+        {% if overall_status == "Active" %}<i
+          class="bi bi-check-circle-fill"
+        ></i
+        >{% endif %} {% if overall_status == "Pending" %}<i
+          class="bi bi-clock"
+        ></i
+        >{% endif %} {{ overall_status }}
+      </div>
     </div>
   </div>
 
+  <!-- Timeline Section -->
   <div class="col-xl-7">
     <section class="card-surface p-4 h-100">
       <div class="section-header mb-4">
@@ -109,6 +127,9 @@ OnboardHub{% endblock %} {% block dashboard_content %}
               <span class="timeline-state">{{ step.status|title }}</span>
             </div>
             <p class="text-muted mb-0">{{ step.note }}</p>
+            {% if step.date %}
+            <small class="text-muted">{{ step.date }}</small>
+            {% endif %}
           </div>
         </div>
         {% endfor %}
@@ -116,44 +137,161 @@ OnboardHub{% endblock %} {% block dashboard_content %}
     </section>
   </div>
 
+  <!-- Quick Actions & Notifications -->
   <div class="col-xl-5">
-    <section class="card-surface p-4 h-100">
-      <div class="section-header mb-4">
-        <div>
-          <h3 class="h5 mb-1">Quick Actions</h3>
-          <p class="text-muted mb-0">Complete tasks that are still pending.</p>
+    <div class="d-grid gap-4">
+      <!-- Pending Actions -->
+      <section class="card-surface p-4">
+        <div class="section-header mb-3">
+          <div>
+            <h3 class="h5 mb-1">Pending Actions ({{ actions|length }})</h3>
+            <p class="text-muted mb-0">Tasks requiring your attention.</p>
+          </div>
         </div>
-      </div>
-      <div class="d-grid gap-3">
-        <a href="{% url 'dashboard_profile' %}" class="action-row">
-          <div>
-            <strong>Edit profile</strong>
-            <p class="mb-0 text-muted small">
-              Update contact and education information
-            </p>
+        <div class="d-grid gap-2">
+          {% for action in actions %}
+          <div
+            class="action-item {% if action.priority == 'HIGH' or action.priority == 'URGENT' %}action-high-priority{% endif %}"
+          >
+            <div class="d-flex align-items-center gap-2">
+              <i class="bi bi-exclamation-circle text-warning"></i>
+              <div>
+                <strong class="small">{{ action.title }}</strong>
+                <p class="mb-0 text-muted small">
+                  {{ action.description|truncatechars:80 }}
+                </p>
+              </div>
+            </div>
           </div>
-          <i class="bi bi-arrow-right"></i>
+          {% empty %}
+          <p class="text-muted small mb-0">
+            No pending actions. You're on track!
+          </p>
+          {% endfor %}
+        </div>
+        <a
+          href="{% url 'dashboard_required_actions' %}"
+          class="btn btn-sm btn-outline-primary mt-3 w-100"
+        >
+          View All Actions
         </a>
-        <a href="{% url 'dashboard_documents' %}" class="action-row">
+      </section>
+
+      <!-- Recent Notifications -->
+      <section class="card-surface p-4">
+        <div class="section-header mb-3">
           <div>
-            <strong>Review documents</strong>
-            <p class="mb-0 text-muted small">
-              Check uploaded files and replace rejected items
-            </p>
+            <h3 class="h5 mb-1">Recent Notifications</h3>
+            <p class="text-muted mb-0">Latest updates and alerts.</p>
           </div>
-          <i class="bi bi-arrow-right"></i>
-        </a>
-        <a href="{% url 'dashboard_approval_status' %}" class="action-row">
-          <div>
-            <strong>View approvals</strong>
-            <p class="mb-0 text-muted small">
-              Follow the verification timeline
-            </p>
+          <a
+            href="{% url 'dashboard_notifications' %}"
+            class="btn btn-sm btn-outline-secondary"
+          >
+            View All
+          </a>
+        </div>
+        <div class="d-grid gap-2">
+          {% for notification in notifications %}
+          <div
+            class="notification-mini {% if not notification.is_read %}unread{% endif %}"
+          >
+            <div class="d-flex align-items-start gap-2">
+              <div
+                class="notification-dot-indicator {% if not notification.is_read %}active-dot{% endif %}"
+              ></div>
+              <div class="min-w-0">
+                <p class="mb-0 small fw-semibold text-truncate">
+                  {{ notification.title }}
+                </p>
+                <small class="text-muted"
+                  >{{ notification.created_at|timesince }} ago</small
+                >
+              </div>
+            </div>
           </div>
-          <i class="bi bi-arrow-right"></i>
-        </a>
-      </div>
-    </section>
+          {% empty %}
+          <p class="text-muted small mb-0">No recent notifications.</p>
+          {% endfor %}
+        </div>
+      </section>
+
+      <!-- Quick Links -->
+      <section class="card-surface p-4">
+        <div class="section-header mb-3">
+          <h3 class="h5 mb-1">Quick Links</h3>
+        </div>
+        <div class="d-grid gap-2">
+          <a href="{% url 'dashboard_profile' %}" class="action-row">
+            <div>
+              <strong>Edit Profile</strong>
+              <p class="mb-0 text-muted small">
+                Update contact and address information
+              </p>
+            </div>
+            <i class="bi bi-arrow-right"></i>
+          </a>
+          <a href="{% url 'dashboard_documents' %}" class="action-row">
+            <div>
+              <strong>Manage Documents</strong>
+              <p class="mb-0 text-muted small">
+                Upload, replace, or preview documents
+              </p>
+            </div>
+            <i class="bi bi-arrow-right"></i>
+          </a>
+          <a href="{% url 'dashboard_approval_status' %}" class="action-row">
+            <div>
+              <strong>View Approvals</strong>
+              <p class="mb-0 text-muted small">
+                Track your onboarding approval pipeline
+              </p>
+            </div>
+            <i class="bi bi-arrow-right"></i>
+          </a>
+        </div>
+      </section>
+    </div>
   </div>
 </div>
+
+<style>
+  .action-item {
+    background: rgba(248, 250, 252, 0.88);
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 12px;
+    padding: 0.75rem 1rem;
+    transition: all 0.2s ease;
+  }
+  .action-item:hover {
+    border-color: rgba(37, 99, 235, 0.2);
+    background: rgba(239, 246, 255, 0.5);
+  }
+  .action-high-priority {
+    border-left: 3px solid #f59e0b;
+  }
+  .notification-mini {
+    padding: 0.6rem 0.75rem;
+    border-radius: 10px;
+    transition: all 0.15s ease;
+  }
+  .notification-mini:hover {
+    background: rgba(37, 99, 235, 0.05);
+  }
+  .notification-mini.unread {
+    background: rgba(239, 246, 255, 0.5);
+  }
+  .notification-dot-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #cbd5e1;
+    margin-top: 0.4rem;
+    flex-shrink: 0;
+  }
+  .active-dot {
+    background: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.2);
+  }
+</style>
 {% endblock %}

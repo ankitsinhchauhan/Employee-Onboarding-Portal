@@ -6,51 +6,397 @@ OnboardHub{% endblock %} {% block dashboard_content %}
   >
     <div>
       <div class="eyebrow mb-2">Documents</div>
-      <h2 class="h3 mb-2">Uploaded documents</h2>
+      <h2 class="h3 mb-2">Document Management</h2>
       <p class="text-muted mb-0">
-        Review the document status and replace or upload missing files.
+        Upload, preview, and manage your onboarding documents.
       </p>
     </div>
-    <div class="d-flex gap-2 flex-wrap">
-      <button class="btn btn-outline-secondary">Preview</button>
-      <button class="btn btn-outline-secondary">Replace</button>
-      <button class="btn btn-primary">Upload</button>
+    <button
+      class="btn btn-primary d-inline-flex align-items-center gap-2"
+      onclick="openUploadModal()"
+    >
+      <i class="bi bi-cloud-upload"></i> Upload Document
+    </button>
+  </div>
+</div>
+
+<!-- Document Stats -->
+<div class="row g-3 mb-4">
+  <div class="col-6 col-md-3">
+    <div class="card-surface p-3 text-center">
+      <div class="h4 mb-0 fw-bold text-primary">
+        {{ document_stats.total|default:"0" }}
+      </div>
+      <small class="text-muted">Required</small>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card-surface p-3 text-center">
+      <div class="h4 mb-0 fw-bold text-success">
+        {{ document_stats.verified|default:"0" }}
+      </div>
+      <small class="text-muted">Verified</small>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card-surface p-3 text-center">
+      <div class="h4 mb-0 fw-bold text-warning">
+        {{ document_stats.pending|default:"0" }}
+      </div>
+      <small class="text-muted">Pending</small>
+    </div>
+  </div>
+  <div class="col-6 col-md-3">
+    <div class="card-surface p-3 text-center">
+      <div class="h4 mb-0 fw-bold text-danger">
+        {{ document_stats.rejected|default:"0" }}
+      </div>
+      <small class="text-muted">Rejected</small>
     </div>
   </div>
 </div>
 
-<div class="card-surface p-0 overflow-hidden">
-  <div class="table-responsive">
-    <table class="table align-middle mb-0 dashboard-table">
-      <thead>
-        <tr>
-          <th>Document</th>
-          <th>Status</th>
-          <th>Uploaded</th>
-          <th class="text-end">Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for document in documents %}
-        <tr>
-          <td class="fw-semibold">{{ document.name }}</td>
-          <td>
-            <span class="status-badge status-{{ document.status|lower }}"
-              >{{ document.status }}</span
-            >
-          </td>
-          <td>{{ document.uploaded }}</td>
-          <td class="text-end">
-            <div class="btn-group btn-group-sm">
-              <button class="btn btn-outline-secondary">Preview</button>
-              <button class="btn btn-outline-secondary">Replace</button>
-              <button class="btn btn-primary">Upload</button>
-            </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+<!-- Progress -->
+<div class="card-surface p-4 mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <span class="text-muted">Document Completion</span>
+    <strong class="text-primary">{{ document_completion }}%</strong>
+  </div>
+  <div class="progress" style="height: 10px; border-radius: 999px">
+    <div
+      class="progress-bar bg-success"
+      style="width:{{ document_completion }}%;border-radius:999px;"
+      role="progressbar"
+    ></div>
   </div>
 </div>
+
+<!-- Document Cards Grid -->
+<div class="row g-3">
+  {% for card in document_cards %}
+  <div class="col-md-6 col-lg-4 col-xl-3">
+    <div
+      class="card document-card card-surface p-3 h-100"
+      data-doc-type="{{ card.type }}"
+      data-doc-id="{{ card.id }}"
+    >
+      <div class="document-card-header">
+        <div
+          class="document-icon"
+          style="background:{{ card.color }}15; color:{{ card.color }};"
+        >
+          <i class="bi {{ card.icon }}"></i>
+        </div>
+        {% if card.required %}
+        <span
+          class="badge bg-warning text-dark position-absolute top-0 end-0 m-2"
+          style="font-size: 0.65rem"
+          >Required</span
+        >
+        {% endif %}
+      </div>
+      <div class="document-card-body mt-3">
+        <h6 class="fw-semibold mb-1">{{ card.type_label }}</h6>
+        {% if card.name %}
+        <small class="text-muted d-block text-truncate">{{ card.name }}</small>
+        <small class="text-muted d-block">{{ card.file_size_display }}</small>
+        {% else %}
+        <small class="text-muted">Not uploaded</small>
+        {% endif %}
+      </div>
+      <div
+        class="document-card-footer mt-2 d-flex align-items-center justify-content-between"
+      >
+        <span class="status-badge status-{{ card.status|lower }}">
+          {% if card.status == "VERIFIED" %}<i
+            class="bi bi-check-circle-fill me-1"
+          ></i
+          >{% endif %} {% if card.status == "PENDING" %}<i
+            class="bi bi-hourglass me-1"
+          ></i
+          >{% endif %} {% if card.status == "REJECTED" %}<i
+            class="bi bi-x-circle-fill me-1"
+          ></i
+          >{% endif %} {% if card.status == "NOT_UPLOADED" %}<i
+            class="bi bi-dash-circle me-1"
+          ></i
+          >{% endif %} {{ card.status_label }}
+        </span>
+      </div>
+      {% if card.id and card.status == "REJECTED" and card.remarks %}
+      <div class="document-remarks mt-2 p-2 bg-danger bg-opacity-10 rounded-3">
+        <small class="text-danger"
+          ><i class="bi bi-exclamation-triangle me-1"></i>{{ card.remarks
+          }}</small
+        >
+      </div>
+      {% endif %} {% if card.id %}
+      <div class="document-actions mt-3 d-flex gap-1">
+        {% if card.is_image or card.is_pdf %}
+        <a
+          href="{% url 'preview_document' card.id %}"
+          target="_blank"
+          class="btn btn-sm btn-outline-secondary flex-fill"
+          title="Preview"
+        >
+          <i class="bi bi-eye"></i>
+        </a>
+        {% endif %}
+        <a
+          href="{% url 'download_document' card.id %}"
+          class="btn btn-sm btn-outline-secondary flex-fill"
+          title="Download"
+        >
+          <i class="bi bi-download"></i>
+        </a>
+        <button
+          class="btn btn-sm btn-outline-warning flex-fill"
+          onclick="replaceDocument({{ card.id }})"
+          title="Replace"
+        >
+          <i class="bi bi-arrow-repeat"></i>
+        </button>
+        <button
+          class="btn btn-sm btn-outline-danger flex-fill"
+          onclick="deleteDocument({{ card.id }})"
+          title="Delete"
+        >
+          <i class="bi bi-trash"></i>
+        </button>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Upload Modal -->
+<div class="modal fade" id="uploadModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">Upload Document</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form
+          method="post"
+          enctype="multipart/form-data"
+          id="documentUploadForm"
+        >
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Document Type</label>
+            {{ form.document_type }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Document Name</label>
+            {{ form.document_name }}
+          </div>
+          <div class="mb-3">
+            <label class="form-label">File</label>
+
+            <!-- Drag & Drop Zone -->
+            <div class="upload-zone" id="uploadZone">
+              <i
+                class="bi bi-cloud-arrow-up-fill"
+                style="font-size: 2.5rem; color: #2563eb"
+              ></i>
+              <p class="mb-1 fw-semibold">Drag & drop your file here</p>
+              <small class="text-muted"
+                >or click to browse (PDF, JPG, PNG, DOC - max 10MB)</small
+              >
+              {{ form.file }}
+            </div>
+            {% if form.file.errors %}
+            <div class="text-danger small mt-1">{{ form.file.errors.0 }}</div>
+            {% endif %}
+          </div>
+          <button type="submit" class="btn btn-primary w-100 py-2">
+            Upload Document
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Replace Modal -->
+<div class="modal fade" id="replaceModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title fw-bold">Replace Document</h5>
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="modal"
+        ></button>
+      </div>
+      <div class="modal-body">
+        <form id="replaceForm" method="post" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label">Choose new file</label>
+            <input
+              type="file"
+              name="file"
+              class="form-control"
+              accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-warning w-100 py-2">
+            Replace
+          </button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Delete Confirmation -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content border-0 shadow">
+      <div class="modal-body text-center p-4">
+        <i
+          class="bi bi-exclamation-triangle-fill text-danger"
+          style="font-size: 2.5rem"
+        ></i>
+        <h5 class="fw-bold mt-3">Delete Document?</h5>
+        <p class="text-muted small">
+          This action cannot be undone. Your document will be permanently
+          removed.
+        </p>
+        <div class="d-flex gap-2 mt-3">
+          <button
+            type="button"
+            class="btn btn-outline-secondary flex-fill"
+            data-bs-dismiss="modal"
+          >
+            Cancel
+          </button>
+          <form method="post" id="deleteForm">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger flex-fill">
+              Delete
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .document-card {
+    position: relative;
+    transition: all 0.25s ease;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+  }
+  .document-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(15, 23, 42, 0.1);
+  }
+  .document-card-header {
+    position: relative;
+  }
+  .document-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 14px;
+    display: grid;
+    place-items: center;
+    font-size: 1.3rem;
+  }
+  .status-badge.status-not_uploaded {
+    color: #94a3b8;
+    background: rgba(148, 163, 184, 0.12);
+  }
+  .status-badge.status-verified {
+    color: #16a34a;
+    background: rgba(22, 163, 74, 0.12);
+  }
+  .status-badge.status-pending {
+    color: #d97706;
+    background: rgba(245, 158, 11, 0.12);
+  }
+  .status-badge.status-rejected {
+    color: #dc2626;
+    background: rgba(239, 68, 68, 0.12);
+  }
+  .upload-zone {
+    border: 2px dashed rgba(37, 99, 235, 0.3);
+    border-radius: 16px;
+    padding: 2rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: rgba(37, 99, 235, 0.04);
+  }
+  .upload-zone:hover,
+  .upload-zone.dragover {
+    border-color: #2563eb;
+    background: rgba(37, 99, 235, 0.08);
+  }
+  .upload-zone input[type="file"] {
+    display: none;
+  }
+  .upload-zone.dragover {
+    transform: scale(1.02);
+  }
+  .document-remarks {
+    font-size: 0.78rem;
+  }
+</style>
+
+<script>
+  // Upload Modal
+  function openUploadModal() {
+    new bootstrap.Modal(document.getElementById("uploadModal")).show();
+  }
+
+  // Drag & Drop
+  const uploadZone = document.getElementById("uploadZone");
+  const fileInput = uploadZone?.querySelector('input[type="file"]');
+
+  if (uploadZone && fileInput) {
+    uploadZone.addEventListener("click", () => fileInput.click());
+    uploadZone.addEventListener("dragover", (e) => {
+      e.preventDefault();
+      uploadZone.classList.add("dragover");
+    });
+    uploadZone.addEventListener("dragleave", () => {
+      uploadZone.classList.remove("dragover");
+    });
+    uploadZone.addEventListener("drop", (e) => {
+      e.preventDefault();
+      uploadZone.classList.remove("dragover");
+      if (e.dataTransfer.files.length) {
+        fileInput.files = e.dataTransfer.files;
+      }
+    });
+  }
+
+  // Replace Document
+  function replaceDocument(docId) {
+    const modal = new bootstrap.Modal(document.getElementById("replaceModal"));
+    const form = document.getElementById("replaceForm");
+    form.action = `/employees/documents/${docId}/replace/`;
+    modal.show();
+  }
+
+  // Delete Document
+  function deleteDocument(docId) {
+    const modal = new bootstrap.Modal(document.getElementById("deleteModal"));
+    const form = document.getElementById("deleteForm");
+    form.action = `/employees/documents/${docId}/delete/`;
+    modal.show();
+  }
+</script>
 {% endblock %}

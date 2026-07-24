@@ -1,14 +1,26 @@
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render
+from django.shortcuts import redirect, render
 
 from employees.services.dashboard_service import DashboardService
 
 
 @login_required
 def required_actions_view(request):
-    """View all pending required actions."""
+    """
+    Required Actions page.
+    
+    NOTE: This page overlaps significantly with Dashboard pending tasks.
+    Recommendation: Keep this as a detailed view of pending actions.
+    The Dashboard already shows a summary of pending actions.
+    This page provides more detail and filtering.
+    """
 
     employee = DashboardService.get_employee_profile(request.user)
+    
+    if not employee:
+        return redirect("dashboard")
+
+    # Get all pending actions (no limit for this page)
     actions = DashboardService.get_pending_actions(employee, limit=50)
     notification_count = DashboardService.get_unread_notification_count(employee)
 
@@ -17,9 +29,11 @@ def required_actions_view(request):
         {
             "title": action.title,
             "description": action.description or "Complete this action to proceed with onboarding.",
-            "icon": "clipboard-check",
-            "button": "Complete",
-            "url_name": "dashboard_documents",
+            "priority": action.priority,
+            "priority_label": action.get_priority_display(),
+            "icon": "exclamation-circle" if action.priority in ("HIGH", "URGENT") else "clipboard-check",
+            "button": "Complete Now",
+            "url_name": _get_action_url(action.title),
             "status": action.get_status_display(),
             "due_date": action.due_date.strftime("%d %b %Y") if action.due_date else None,
         }
@@ -36,6 +50,8 @@ def required_actions_view(request):
                 {
                     "title": "Complete your profile",
                     "description": "Add your contact details, emergency contact, and other required information.",
+                    "priority": "HIGH",
+                    "priority_label": "High",
                     "icon": "person-check",
                     "button": "Complete Profile",
                     "url_name": "dashboard_profile",
@@ -48,6 +64,8 @@ def required_actions_view(request):
                 {
                     "title": "Upload required documents",
                     "description": "Upload your PAN card, Aadhaar card, degree certificate, and profile photo.",
+                    "priority": "HIGH",
+                    "priority_label": "High",
                     "icon": "cloud-upload",
                     "button": "Upload Documents",
                     "url_name": "dashboard_documents",
@@ -60,6 +78,8 @@ def required_actions_view(request):
             {
                 "title": "Check approval status",
                 "description": "Track the progress of your document verification and approvals.",
+                "priority": "MEDIUM",
+                "priority_label": "Medium",
                 "icon": "diagram-3",
                 "button": "View Status",
                 "url_name": "dashboard_approval_status",
@@ -68,15 +88,20 @@ def required_actions_view(request):
             }
         )
 
+    profile_completion = DashboardService.calculate_profile_completion(employee)
+    document_completion = DashboardService.calculate_document_completion(employee)
+
     context = {
         "actions": action_list,
         "employee_name": request.user.full_name,
-        "employee_id": employee.employee_id if employee else "Not assigned",
-        "department": employee.department if employee else "Not assigned",
-        "joining_date": employee.joining_date if employee else request.user.date_joined,
-        "profile_completion": DashboardService.calculate_profile_completion(employee),
-        "document_completion": DashboardService.calculate_document_completion(employee),
+        "employee_id": employee.employee_id,
+        "department": employee.department or "Not assigned",
+        "designation": employee.designation or "Not assigned",
+        "joining_date": employee.joining_date if employee.joining_date else request.user.date_joined,
+        "profile_completion": profile_completion,
+        "document_completion": document_completion,
         "verification_status": DashboardService.get_verification_status(employee),
+        "overall_progress": DashboardService.calculate_overall_progress(employee),
         "overall_status": request.user.get_display_status(),
         "notification_count": notification_count,
         "active_nav": "required_actions",
@@ -84,4 +109,16 @@ def required_actions_view(request):
     }
 
     return render(request, "dashboard/required_actions.html", context)
+
+
+def _get_action_url(title):
+    """Map action title to URL name."""
+    title_lower = title.lower()
+    if "profile" in title_lower:
+        return "dashboard_profile"
+    if "document" in title_lower or "upload" in title_lower:
+        return "dashboard_documents"
+    if "approval" in title_lower or "status" in title_lower:
+        return "dashboard_approval_status"
+    return "dashboard"
 

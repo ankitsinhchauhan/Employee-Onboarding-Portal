@@ -1,34 +1,182 @@
 {% extends 'dashboard/dashboard_base.html' %} {% block title %}Approval Status |
 OnboardHub{% endblock %} {% block dashboard_content %}
+
 <div class="card-surface p-4 p-xl-5 mb-4">
   <div
     class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center"
   >
     <div>
-      <div class="eyebrow mb-2">Approval Timeline</div>
-      <h2 class="h3 mb-2">Vertical approval status</h2>
+      <div class="eyebrow mb-2">Approval Status</div>
+      <h2 class="h3 mb-2">Onboarding Approval Timeline</h2>
       <p class="text-muted mb-0">
-        Follow the current review stage and upcoming approvals.
+        Track the progress of your profile, documents, and approvals through
+        each stage.
       </p>
     </div>
-    <div class="status-badge status-current">{{ verification_status }}</div>
+    <div class="text-end">
+      <span class="status-badge status-{{ verification_status|lower }}">
+        {{ verification_status }}
+      </span>
+    </div>
   </div>
 </div>
 
+<!-- Overall Progress -->
+<div class="card-surface p-4 mb-4">
+  <div class="d-flex justify-content-between align-items-center mb-2">
+    <span class="text-muted">Overall Approval Progress</span>
+    <strong class="text-primary">{{ progress_percentage }}%</strong>
+  </div>
+  <div class="progress" style="height: 12px; border-radius: 999px">
+    <div
+      class="progress-bar bg-primary"
+      style="width:{{ progress_percentage }}%;border-radius:999px;"
+      role="progressbar"
+    ></div>
+  </div>
+  <div class="d-flex justify-content-between mt-2">
+    <small class="text-muted"
+      >{{ completed_steps }} of {{ total_steps }} steps completed</small
+    >
+    <small class="text-muted">{{ progress_percentage }}% complete</small>
+  </div>
+</div>
+
+<!-- Status Cards Row -->
+<div class="row g-3 mb-4">
+  <div class="col-md-3 col-6">
+    <div class="card-surface p-3 text-center h-100">
+      <div class="h5 mb-0 fw-bold">{{ profile_completion }}%</div>
+      <small class="text-muted">Profile</small>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="card-surface p-3 text-center h-100">
+      <div class="h5 mb-0 fw-bold">{{ document_completion }}%</div>
+      <small class="text-muted">Documents</small>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="card-surface p-3 text-center h-100">
+      <div class="h5 mb-0 fw-bold">{{ verification_status }}</div>
+      <small class="text-muted">Verification</small>
+    </div>
+  </div>
+  <div class="col-md-3 col-6">
+    <div class="card-surface p-3 text-center h-100">
+      <div class="h5 mb-0 fw-bold">{{ overall_status }}</div>
+      <small class="text-muted">Account Status</small>
+    </div>
+  </div>
+</div>
+
+<!-- Dynamic Timeline -->
 <section class="card-surface p-4 p-xl-5">
+  <div class="section-header mb-4">
+    <h3 class="h5 mb-1">Approval Pipeline</h3>
+    <p class="text-muted mb-0">Current stage and upcoming approval steps.</p>
+  </div>
   <div class="approval-timeline">
-    {% for item in approval_timeline %}
+    {% for item in timeline_items %}
     <article class="approval-step {{ item.status }}">
-      <div class="approval-marker"></div>
-      <div>
-        <div class="d-flex justify-content-between gap-3 flex-wrap">
-          <strong>{{ item.title }}</strong>
-          <span class="text-muted small">{{ item.date }}</span>
+      <div class="approval-marker">
+        {% if item.status == "completed" %}<i
+          class="bi bi-check-circle-fill text-success"
+        ></i
+        >{% endif %} {% if item.status == "current" %}<i
+          class="bi bi-play-circle-fill text-primary"
+        ></i
+        >{% endif %} {% if item.status == "pending" %}<i
+          class="bi bi-circle text-secondary"
+        ></i
+        >{% endif %}
+      </div>
+      <div class="approval-content">
+        <div
+          class="d-flex justify-content-between gap-3 flex-wrap align-items-center"
+        >
+          <strong class="h6 mb-0">{{ item.step_name }}</strong>
+          {% if item.completed_at %}
+          <span class="small text-muted">{{ item.date_display }}</span>
+          {% endif %}
         </div>
-        <p class="mb-0 text-muted">{{ item.status|title }}</p>
+        <p class="mb-0 text-muted small mt-1">
+          {% if item.status == "completed" %}
+          <span class="text-success">✓ Completed</span>
+          {% elif item.status == "current" %}
+          <span class="text-primary">● In Progress</span>
+          {% else %}
+          <span class="text-secondary">○ Pending</span>
+          {% endif %} {% if item.completed_at %} · {{ item.completed_at }} {%
+          endif %}
+        </p>
       </div>
     </article>
+    {% endif %}
+    <div class="text-center py-5">
+      <i class="bi bi-diagram-3 text-muted" style="font-size: 2.5rem"></i>
+      <p class="text-muted mt-2">
+        No approval steps found. Please contact HR if this persists.
+      </p>
+    </div>
     {% endfor %}
   </div>
 </section>
+
+<style>
+  .approval-timeline {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .approval-step {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    position: relative;
+    padding-left: 0.5rem;
+  }
+  .approval-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    left: 14px;
+    top: 28px;
+    bottom: -16px;
+    width: 2px;
+    background: rgba(148, 163, 184, 0.2);
+  }
+  .approval-step.completed:not(:last-child)::after {
+    background: rgba(22, 163, 74, 0.3);
+  }
+  .approval-step.current:not(:last-child)::after {
+    background: rgba(37, 99, 235, 0.3);
+  }
+  .approval-marker {
+    width: 28px;
+    height: 28px;
+    display: grid;
+    place-items: center;
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+  }
+  .approval-content {
+    background: rgba(248, 250, 252, 0.8);
+    border: 1px solid rgba(148, 163, 184, 0.14);
+    border-radius: 14px;
+    padding: 1rem 1.25rem;
+    transition: all 0.2s ease;
+  }
+  .approval-step.completed .approval-content {
+    border-color: rgba(22, 163, 74, 0.2);
+    background: rgba(240, 253, 244, 0.5);
+  }
+  .approval-step.current .approval-content {
+    border-color: rgba(37, 99, 235, 0.25);
+    background: rgba(239, 246, 255, 0.5);
+  }
+  .approval-content:hover {
+    transform: translateX(3px);
+  }
+</style>
 {% endblock %}

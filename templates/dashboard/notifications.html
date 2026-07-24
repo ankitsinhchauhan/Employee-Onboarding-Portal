@@ -1,38 +1,286 @@
 {% extends 'dashboard/dashboard_base.html' %} {% block title %}Notifications |
 OnboardHub{% endblock %} {% block dashboard_content %}
-<div
-  class="card-surface p-4 p-xl-5 mb-4 d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center"
->
-  <div>
-    <div class="eyebrow mb-2">Notifications</div>
-    <h2 class="h3 mb-2">All notifications</h2>
-    <p class="text-muted mb-0">
-      Unread items are highlighted and can be marked as read.
-    </p>
+
+<div class="card-surface p-4 p-xl-5 mb-4">
+  <div
+    class="d-flex flex-column flex-lg-row justify-content-between gap-3 align-items-lg-center"
+  >
+    <div>
+      <div class="eyebrow mb-2">Notifications</div>
+      <h2 class="h3 mb-2">All Notifications</h2>
+      <p class="text-muted mb-0">
+        Track profile updates, document changes, and approval status alerts.
+      </p>
+    </div>
+    <div class="d-flex align-items-center gap-3">
+      <span class="unread-pill">
+        <i class="bi bi-bell-fill me-1"></i> {{ unread_count }} unread
+      </span>
+      {% if unread_count > 0 %}
+      <form
+        method="post"
+        action="{% url 'mark_all_notifications_read' %}"
+        style="display: inline"
+      >
+        {% csrf_token %}
+        <button
+          type="submit"
+          class="btn btn-outline-primary btn-sm"
+          data-mark-all-read
+        >
+          <i class="bi bi-check2-all"></i> Mark All Read
+        </button>
+      </form>
+      {% endif %}
+    </div>
   </div>
-  <span class="unread-pill">{{ unread_count }} unread</span>
 </div>
 
+<!-- Category Filter & Search -->
+<div class="card-surface p-3 mb-4">
+  <div class="row g-3 align-items-center">
+    <div class="col-md-7">
+      <div class="d-flex gap-2 flex-wrap">
+        <a
+          href="?category=ALL{% if search_query %}&search={{ search_query }}{% endif %}"
+          class="btn btn-sm {% if current_category == 'ALL' or not current_category %}btn-primary{% else %}btn-outline-secondary{% endif %}"
+        >
+          All ({{ total_count }})
+        </a>
+        <!-- {% for cat_key, cat_label in Notification.CATEGORY_CHOICES %}
+        <a
+          href="?category={{ cat_key }}{% if search_query %}&search={{ search_query }}{% endif %}"
+          class="btn btn-sm {% if current_category == cat_key %}btn-primary{% else %}btn-outline-secondary{% endif %}"
+        >
+          {{ cat_label }} ({{ count|default:0 }})
+        </a>
+        {% endfor %} -->
+      </div>
+    </div>
+    <div class="col-md-5">
+      <form method="get" class="d-flex gap-2">
+        {% if current_category != 'ALL' %}<input
+          type="hidden"
+          name="category"
+          value="{{ current_category }}"
+        />{% endif %}
+        <div class="input-group">
+          <span class="input-group-text bg-white border-end-0"
+            ><i class="bi bi-search"></i
+          ></span>
+          <input
+            type="search"
+            name="search"
+            class="form-control border-start-0"
+            placeholder="Search notifications..."
+            value="{{ search_query }}"
+          />
+        </div>
+        <button type="submit" class="btn btn-primary">
+          <i class="bi bi-search"></i>
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Notifications List -->
 <div class="d-grid gap-3">
   {% for notification in notifications %}
   <div
-    class="card-surface p-4 notification-row {% if not notification.read %}is-unread{% endif %}"
+    class="card-surface p-4 notification-row {% if not notification.is_read %}is-unread{% endif %}"
+    data-notification-id="{{ notification.id }}"
   >
-    <div
-      class="d-flex flex-column flex-md-row justify-content-between gap-3 align-items-md-center"
-    >
-      <div>
-        <div class="d-flex align-items-center gap-2 mb-1">
-          <strong>{{ notification.title }}</strong>
-          {% if not notification.read %}<span class="status-badge status-info"
-            >Unread</span
-          >{% endif %}
-        </div>
-        <p class="mb-0 text-muted small">{{ notification.meta }}</p>
+    <div class="d-flex gap-3">
+      <div class="notification-category-icon {{ notification.category|lower }}">
+        {% if notification.category == "PROFILE" %}<i class="bi bi-person"></i
+        >{% endif %} {% if notification.category == "DOCUMENT" %}<i
+          class="bi bi-file-earmark"
+        ></i
+        >{% endif %} {% if notification.category == "APPROVAL" %}<i
+          class="bi bi-check-circle"
+        ></i
+        >{% endif %} {% if notification.category == "SYSTEM" %}<i
+          class="bi bi-gear"
+        ></i
+        >{% endif %}
       </div>
-      <button class="btn btn-outline-primary btn-sm">Mark as Read</button>
+      <div class="flex-grow-1 min-w-0">
+        <div
+          class="d-flex flex-column flex-md-row justify-content-between gap-2"
+        >
+          <div>
+            <div class="d-flex align-items-center gap-2 mb-1">
+              <strong class="text-truncate">{{ notification.title }}</strong>
+              {% if not notification.is_read %}
+              <span class="status-badge status-info">New</span>
+              {% endif %}
+            </div>
+            {% if notification.message %}
+            <p class="mb-1 text-muted small">{{ notification.message }}</p>
+            {% endif %}
+            <div class="d-flex align-items-center gap-2 mt-1">
+              <span
+                class="badge bg-light text-dark rounded-pill"
+                style="font-size: 0.7rem"
+              >
+                {{ notification.category_label }}
+              </span>
+              <small class="text-muted"
+                >{{ notification.created_at_display }}</small
+              >
+            </div>
+          </div>
+          <div class="d-flex gap-2 align-items-start flex-shrink-0">
+            {% if not notification.is_read %}
+            <form
+              method="post"
+              action="{% url 'mark_notification_read' notification.id %}"
+              style="display: inline"
+            >
+              {% csrf_token %}
+              <button
+                type="submit"
+                class="btn btn-outline-primary btn-sm"
+                data-mark-read="{{ notification.id }}"
+              >
+                <i class="bi bi-check2"></i> Mark Read
+              </button>
+            </form>
+            {% endif %}
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
+  {% empty %}
+  <div class="card-surface p-5 text-center">
+    <i class="bi bi-bell-slash text-muted" style="font-size: 3rem"></i>
+    <h5 class="mt-3">No notifications</h5>
+    <p class="text-muted mb-0">
+      {% if search_query %} No notifications matching "{{ search_query }}". {%
+      else %} You're all caught up! No new notifications to show. {% endif %}
+    </p>
   </div>
   {% endfor %}
 </div>
+
+<!-- Pagination -->
+{% if total_pages > 1 %}
+<nav class="mt-4" aria-label="Notification pagination">
+  <ul class="pagination justify-content-center">
+    {% if has_previous %}
+    <li class="page-item">
+      <a
+        class="page-link"
+        href="?page={{ current_page|add:-1 }}&category={{ current_category }}&search={{ search_query }}"
+      >
+        <i class="bi bi-chevron-left"></i>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <span class="page-link"><i class="bi bi-chevron-left"></i></span>
+    </li>
+    {% endif %} {% for i in total_pages|default:1 %}
+    <li class="page-item {% if i == current_page %}active{% endif %}">
+      <a
+        class="page-link"
+        href="?page={{ i }}&category={{ current_category }}&search={{ search_query }}"
+        >{{ i }}</a
+      >
+    </li>
+    {% endfor %} {% if has_next %}
+    <li class="page-item">
+      <a
+        class="page-link"
+        href="?page={{ current_page|add:1 }}&category={{ current_category }}&search={{ search_query }}"
+      >
+        <i class="bi bi-chevron-right"></i>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <span class="page-link"><i class="bi bi-chevron-right"></i></span>
+    </li>
+    {% endif %}
+  </ul>
+</nav>
+{% endif %}
+
+<style>
+  .notification-row {
+    transition: all 0.2s ease;
+    border: 1px solid rgba(148, 163, 184, 0.18);
+  }
+  .notification-row.is-unread {
+    border-color: rgba(37, 99, 235, 0.35);
+    background: rgba(239, 246, 255, 0.72);
+    border-left: 3px solid #2563eb;
+  }
+  .notification-row:hover {
+    transform: translateX(3px);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  }
+  .notification-category-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 1.2rem;
+    flex-shrink: 0;
+  }
+  .notification-category-icon.profile {
+    background: rgba(37, 99, 235, 0.1);
+    color: #2563eb;
+  }
+  .notification-category-icon.document {
+    background: rgba(245, 158, 11, 0.1);
+    color: #d97706;
+  }
+  .notification-category-icon.approval {
+    background: rgba(22, 163, 74, 0.1);
+    color: #16a34a;
+  }
+  .notification-category-icon.system {
+    background: rgba(100, 116, 139, 0.1);
+    color: #64748b;
+  }
+</style>
+
+<script>
+  document.querySelectorAll("[data-mark-read]").forEach((btn) => {
+    btn.addEventListener("click", function (e) {
+      const form = this.closest("form");
+      if (form) {
+        e.preventDefault();
+        fetch(form.action, {
+          method: "POST",
+          headers: {
+            "X-CSRFToken": "{{ csrf_token }}",
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.status === "ok") {
+              const row = this.closest(".notification-row");
+              if (row) {
+                row.classList.remove("is-unread");
+                const badge = row.querySelector(".status-badge");
+                if (badge) badge.remove();
+              }
+              const unreadPill = document.querySelector(".unread-pill");
+              if (unreadPill) {
+                const current = parseInt(unreadPill.textContent) || 0;
+                unreadPill.innerHTML = `<i class="bi bi-bell-fill me-1"></i> ${Math.max(0, current - 1)} unread`;
+              }
+            }
+          })
+          .catch((err) => console.error(err));
+      }
+    });
+  });
+</script>
 {% endblock %}
